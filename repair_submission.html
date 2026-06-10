@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mobile Repair Submission</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ── DESIGN SYSTEM ─────────────────────────────────────────────── */
+        :root {
+            /* Brand Colors */
+            --primary-dark:     #0f172a;
+            --primary-blue:     #1e40af;
+            --accent-orange:    #f97316;
+            --success:          #16a34a;
+            --warning:          #eab308;
+            --danger:           #dc2626;
+
+            /* Neutral Colors */
+            --bg-light:         #f8fafc;
+            --bg-white:         #ffffff;
+            --border-color:     #e2e8f0;
+            --text-dark:        #1e293b;
+            --text-muted:       #64748b;
+
+            /* Status Colors */
+            --status-pending:      #fbbf24;
+            --status-in-progress:  #3b82f6;
+            --status-ready:        #10b981;
+            --status-delivered:    #6b7280;
+
+            /* Spacing & Sizing */
+            --radius:           8px;
+            --shadow:           0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-lg:        0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* ── HEADER ────────────────────────────────────────────────────── */
+        .header {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #1a2746 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .header-content {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-placeholder {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-orange);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 20px;
+            color: white;
+        }
+
+        .header-text h1 {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .header-text p {
+            font-size: 12px;
+            opacity: 0.9;
+            margin: 2px 0 0 0;
+        }
+
+        /* ── MAIN CONTAINER ────────────────────────────────────────────── */
+        .main-container {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-card {
+            background: var(--bg-white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 28px 24px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .form-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .form-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        /* ── FORM FIELDS ───────────────────────────────────────────────── */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        input[type="text"],
+        input[type="tel"],
+        textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius);
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            color: var(--text-dark);
+            background: var(--bg-white);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="tel"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+
+        input[type="text"].invalid,
+        input[type="tel"].invalid {
+            border-color: var(--danger);
+            background: rgba(220, 38, 38, 0.02);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-size: 14px;
+        }
+
+        .field-counter {
+            text-align: right;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .field-hint {
+            font-size: 12px;
+            color: var(--danger);
+            margin-top: 4px;
+            min-height: 18px;
+            display: block;
+        }
+
+        /* ── SUBMIT BUTTON ────────────────────────────────────────────── */
+        .form-button {
+            width: 100%;
+            padding: 14px 20px;
+            margin-top: 8px;
+            border: none;
+            border-radius: var(--radius);
+            background: linear-gradient(135deg, var(--accent-orange) 0%, #ea580c 100%);
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .form-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(249, 115, 22, 0.3);
+        }
+
+        .form-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2.5px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ── ERROR BOX ─────────────────────────────────────────────────── */
+        .error-box {
+            display: none;
+            margin-top: 16px;
+            padding: 12px 14px;
+            background: #fef2f2;
+            border-left: 4px solid var(--danger);
+            border-radius: var(--radius);
+            color: var(--danger);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .error-box.visible {
+            display: block;
+        }
+
+        /* ── SUCCESS MODAL ────────────────────────────────────────────── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.visible {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 32px 28px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
+
+        .modal-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .modal h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+        }
+
+        .modal p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+
+        .repair-id-display {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin: 16px 0;
+            padding: 12px;
+            background: var(--bg-light);
+            border-radius: var(--radius);
+            font-family: 'Courier New', monospace;
+        }
+
+        .modal-button {
+            width: 100%;
+            padding: 12px 20px;
+            margin-top: 20px;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-button:hover {
+            background: #1d3a8a;
+            transform: translateY(-2px);
+        }
+
+        /* ── RESPONSIVE DESIGN ────────────────────────────────────────── */
+        @media (max-width: 640px) {
+            .header-content {
+                gap: 10px;
+            }
+
+            .header-text h1 {
+                font-size: 18px;
+            }
+
+            .main-container {
+                padding: 16px;
+            }
+
+            .form-card {
+                padding: 20px 16px;
+            }
+
+            .form-title {
+                font-size: 20px;
+            }
+
+            .form-group {
+                margin-bottom: 18px;
+            }
+
+            input[type="text"],
+            input[type="tel"],
+            textarea {
+                padding: 10px 12px;
+                font-size: 16px;
+            }
+
+            .modal {
+                padding: 24px 20px;
+            }
+
+            .repair-id-display {
+                font-size: 24px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .main-container {
+                padding: 40px 20px;
+            }
+
+            .form-card {
+                padding: 40px 36px;
+            }
+
+            .form-title {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ── HEADER ────────────────────────────────────────────────────── -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo-placeholder">🔧</div>
+            <div class="header-text">
+                <h1>Mobile Repair Hub</h1>
+                <p>Quick & Reliable Service</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── MAIN FORM ────────────────────────────────────────────────── -->
+    <div class="main-container">
+        <div class="form-card">
+            <h2 class="form-title">Submit Your Device</h2>
+            <p class="form-subtitle">Fill in your details and we'll get started</p>
+
+            <form id="repairForm">
+
+                <!-- Name Field -->
+                <div class="form-group">
+                    <label for="name">Customer Name</label>
+                    <div class="input-wrapper">
+                        <input
+                            type="text"
+                            id="name"
+                            placeholder="Full name"
+                            maxlength="50"
+                            required
+                        />
+                    </div>
+                    <div class="field-counter" id="nameCounter">0/50</div>
+                    <span class="field-hint" id="nameHint"></span>
+                </div>
+
+                <!-- Phone Field -->
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <div class="input-wrapper">
+                        <input
+                            type="tel"
+                            id="phone"
+                            placeholder="10-digit number"
+                            maxlength="10"
+                            required
+                        />
+                    </div>
+                    <div class="field-counter" id="phoneCounter">0/10</div>
+                    <span class="field-hint" id="phoneHint"></span>
+                </div>
+
+                <!-- Model Field -->
+                <div class="form-group">
+                    <label for="model">Mobile Model</label>
+                    <div class="input-wrapper">
+                        <input
+                            type="text"
+                            id="model"
+                            placeholder="e.g., iPhone 12, Samsung A51"
+                            maxlength="20"
+                            required
+                        />
+                    </div>
+                    <div class="field-counter" id="modelCounter">0/20</div>
+                </div>
+
+                <!-- Problem Field -->
+                <div class="form-group">
+                    <label for="problem">Problem Description</label>
+                    <div class="input-wrapper">
+                        <textarea
+                            id="problem"
+                            placeholder="Describe the issue in detail..."
+                            required
+                        ></textarea>
+                    </div>
+                    <div class="field-counter" id="problemCounter">0</div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="submitBtn" class="form-button" disabled>
+                    <span>Submit Repair Request</span>
+                </button>
+
+                <!-- Error Box -->
+                <div class="error-box" id="errorBox"></div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- ── SUCCESS MODAL ────────────────────────────────────────────── -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal">
+            <div class="modal-icon">✅</div>
+            <h2>Repair Submitted!</h2>
+            <p>Your repair has been received and is being processed.</p>
+            <div class="repair-id-display" id="modalRepairId"></div>
+            <p style="font-weight: 600; color: var(--primary-blue);">Save this ID</p>
+            <p>Use this ID to track your repair status anytime from the tracker page.</p>
+            <button class="modal-button" id="closeModalBtn">Continue</button>
+        </div>
+    </div>
+
+    <!-- ── CONFIG & SCRIPTS ────────────────────────────────────────── -->
+    <script src="config.js"></script>
+
+    <script>
+        // ── Counter updaters ──────────────────────────────────────────
+        function updateCounter(fieldId, counterId, maxLength) {
+            const field = document.getElementById(fieldId);
+            const counter = document.getElementById(counterId);
+
+            field.addEventListener("input", () => {
+                const currentLength = field.value.length;
+                counter.textContent = maxLength
+                    ? `${currentLength}/${maxLength}`
+                    : currentLength;
+            });
+        }
+
+        updateCounter("name", "nameCounter", 50);
+        updateCounter("phone", "phoneCounter", 10);
+        updateCounter("model", "modelCounter", 20);
+        updateCounter("problem", "problemCounter");
+
+        // ── Field references ──────────────────────────────────────────
+        const form = document.getElementById("repairForm");
+        const submitBtn = document.getElementById("submitBtn");
+        const nameField = document.getElementById("name");
+        const phoneField = document.getElementById("phone");
+        const modelField = document.getElementById("model");
+        const problemField = document.getElementById("problem");
+
+        // ── Error handling ────────────────────────────────────────────
+        function showError(msg) {
+            const box = document.getElementById("errorBox");
+            box.textContent = msg;
+            box.classList.add("visible");
+        }
+
+        function hideError() {
+            document.getElementById("errorBox").classList.remove("visible");
+        }
+
+        // ── Validation ────────────────────────────────────────────────
+        function validateForm() {
+            const nameValue = nameField.value.trim();
+            const nameValid = nameValue.length >= 2;
+
+            const phoneValue = phoneField.value;
+            const phoneValid = phoneValue.length === 10;
+
+            const modelValid = modelField.value.trim().length > 0;
+            const problemValid = problemField.value.trim().length > 0;
+
+            // Name hint
+            const nameHint = document.getElementById("nameHint");
+            if (nameValue.length > 0 && !nameValid) {
+                nameHint.textContent = "Name must be at least 2 characters.";
+                nameField.classList.add("invalid");
+            } else {
+                nameHint.textContent = "";
+                nameField.classList.remove("invalid");
+            }
+
+            // Phone hint
+            const phoneHint = document.getElementById("phoneHint");
+            if (phoneValue.length > 0 && !phoneValid) {
+                phoneHint.textContent = `Phone must be 10 digits. (${phoneValue.length}/10)`;
+                phoneField.classList.add("invalid");
+            } else {
+                phoneHint.textContent = "";
+                phoneField.classList.remove("invalid");
+            }
+
+            submitBtn.disabled = !(nameValid && phoneValid && modelValid && problemValid);
+        }
+
+        // Input filters
+        nameField.addEventListener("input", function () {
+            this.value = this.value.replace(/[^A-Za-z ]/g, "");
+            validateForm();
+        });
+
+        phoneField.addEventListener("input", function () {
+            this.value = this.value.replace(/\D/g, "");
+            validateForm();
+        });
+
+        modelField.addEventListener("input", validateForm);
+        problemField.addEventListener("input", validateForm);
+
+        // ── Form submission ───────────────────────────────────────────
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            hideError();
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner"></span> Submitting...';
+
+            const data = {
+                action: "createRepair",
+                name: nameField.value.trim(),
+                phone: phoneField.value,
+                model: modelField.value.trim(),
+                problem: problemField.value.trim(),
+                status: "Pending"
+            };
+
+            try {
+                const response = await fetch(CONFIG.N8N_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                const repairId = result[0] && result[0]["Repair ID"];
+
+                if (!repairId) {
+                    showError("Submission failed. Please try again.");
+                    return;
+                }
+
+                document.getElementById("modalRepairId").textContent = repairId;
+                document.getElementById("successModal").classList.add("visible");
+
+                form.reset();
+                document.getElementById("nameCounter").textContent = "0/50";
+                document.getElementById("phoneCounter").textContent = "0/10";
+                document.getElementById("modelCounter").textContent = "0/20";
+                document.getElementById("problemCounter").textContent = "0";
+                document.getElementById("nameHint").textContent = "";
+                document.getElementById("phoneHint").textContent = "";
+                validateForm();
+
+            } catch (error) {
+                console.error(error);
+                showError("Unable to submit. Please check your connection and try again.");
+            } finally {
+                submitBtn.innerHTML = "Submit Repair Request";
+                validateForm();
+            }
+        });
+
+        // ── Modal close ───────────────────────────────────────────────
+        document.getElementById("closeModalBtn").addEventListener("click", () => {
+            document.getElementById("successModal").classList.remove("visible");
+        });
+    </script>
+
+</body>
+
+</html>

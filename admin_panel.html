@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ── DESIGN SYSTEM ─────────────────────────────────────────────── */
+        :root {
+            --primary-dark:     #0f172a;
+            --primary-blue:     #1e40af;
+            --accent-orange:    #f97316;
+            --success:          #16a34a;
+            --warning:          #eab308;
+            --danger:           #dc2626;
+
+            --bg-light:         #f8fafc;
+            --bg-white:         #ffffff;
+            --border-color:     #e2e8f0;
+            --text-dark:        #1e293b;
+            --text-muted:       #64748b;
+
+            --status-pending:      #fbbf24;
+            --status-in-progress:  #3b82f6;
+            --status-ready:        #10b981;
+            --status-delivered:    #6b7280;
+
+            --radius:           8px;
+            --shadow:           0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-lg:        0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        /* ── HEADER ────────────────────────────────────────────────────── */
+        .header {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #1a2746 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-placeholder {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-orange);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        .header-text h1 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .header-text p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .refresh-btn {
+            background: var(--accent-orange);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: var(--radius);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(249, 115, 22, 0.3);
+        }
+
+        /* ── MAIN CONTAINER ────────────────────────────────────────────── */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 40px;
+        }
+
+        /* ── LOADING STATE ────────────────────────────────────────────── */
+        .loading-msg {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .loading-msg.visible {
+            display: block;
+        }
+
+        /* ── TABLE CARD ────────────────────────────────────────────────── */
+        .table-card {
+            background: var(--bg-white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        /* Desktop: normal table */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        th {
+            background: var(--bg-light);
+            padding: 14px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1.5px solid var(--border-color);
+        }
+
+        td {
+            padding: 14px;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: var(--bg-light);
+        }
+
+        /* ── STATUS BADGE ──────────────────────────────────────────────── */
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            min-width: 90px;
+        }
+
+        .status-pending {
+            background: rgba(251, 191, 36, 0.2);
+            color: #92400e;
+        }
+
+        .status-in-progress {
+            background: rgba(59, 130, 246, 0.2);
+            color: #1e40af;
+        }
+
+        .status-ready {
+            background: rgba(16, 185, 129, 0.2);
+            color: #047857;
+        }
+
+        .status-delivered {
+            background: rgba(107, 114, 128, 0.2);
+            color: #374151;
+        }
+
+        /* ── STATUS DROPDOWN ───────────────────────────────────────────── */
+        .status-select {
+            padding: 8px 10px;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            background: white;
+            color: var(--text-dark);
+            transition: border-color 0.2s;
+        }
+
+        .status-select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        /* ── ACTION MENU ───────────────────────────────────────────────── */
+        .action-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .action-btn {
+            padding: 8px 12px;
+            background: var(--bg-light);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1;
+            color: var(--text-dark);
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: white;
+            border-color: var(--text-muted);
+        }
+
+        .action-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 110%;
+            background: var(--bg-white);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            min-width: 160px;
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        .action-wrapper.open .action-menu {
+            display: block;
+        }
+
+        .action-menu button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 12px 14px;
+            background: none;
+            border: none;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            color: var(--text-dark);
+            transition: background 0.15s;
+            justify-content: flex-start;
+        }
+
+        .action-menu button:hover {
+            background: var(--bg-light);
+        }
+
+        .action-menu button.delete {
+            color: var(--danger);
+        }
+
+        /* ── EDIT MODAL ────────────────────────────────────────────────── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 32px 28px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--text-dark);
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius);
+            font-family: 'Poppins', sans-serif;
+            font-size: 13px;
+            color: var(--text-dark);
+            background: var(--bg-light);
+            transition: border-color 0.2s;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            background: white;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .btn-save,
+        .btn-cancel {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-save {
+            background: var(--accent-orange);
+            color: white;
+        }
+
+        .btn-save:hover {
+            background: #ea580c;
+            transform: translateY(-2px);
+        }
+
+        .btn-cancel {
+            background: var(--bg-light);
+            color: var(--text-dark);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-cancel:hover {
+            background: white;
+        }
+
+        /* ── RESPONSIVE DESIGN ────────────────────────────────────────── */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-left {
+                width: 100%;
+            }
+
+            .refresh-btn {
+                width: 100%;
+                margin-top: 10px;
+            }
+
+            .container {
+                padding: 0 16px 32px;
+            }
+
+            table {
+                min-width: 100%;
+                font-size: 13px;
+            }
+
+            th, td {
+                padding: 10px;
+                font-size: 12px;
+            }
+
+            .action-menu {
+                right: -10px;
+            }
+
+            .modal {
+                padding: 24px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo-placeholder {
+                width: 36px;
+                height: 36px;
+                font-size: 18px;
+            }
+
+            .header-text h1 {
+                font-size: 18px;
+            }
+
+            .header-text p {
+                font-size: 11px;
+            }
+
+            th, td {
+                padding: 8px;
+                font-size: 11px;
+            }
+
+            .status-badge {
+                min-width: 75px;
+                padding: 4px 8px;
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ── HEADER ────────────────────────────────────────────────────── -->
+    <div class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="logo-placeholder">🔧</div>
+                <div class="header-text">
+                    <h1>Admin Dashboard</h1>
+                    <p>Manage Repairs</p>
+                </div>
+            </div>
+            <button class="refresh-btn" onclick="loadRepairs()">⟳ Refresh Data</button>
+        </div>
+    </div>
+
+    <!-- ── MAIN CONTAINER ────────────────────────────────────────────── -->
+    <div class="container">
+        <div class="table-card">
+            <div class="loading-msg" id="loadingMsg">
+                Loading repairs...
+            </div>
+
+            <div class="table-wrapper">
+                <table id="repairTable">
+                    <thead>
+                        <tr>
+                            <th>Repair ID</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Model</th>
+                            <th>Problem</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th style="text-align: center;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="repairTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── EDIT MODAL ────────────────────────────────────────────────── -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal">
+            <h3>✏️ Edit Repair Details</h3>
+
+            <input type="hidden" id="editRepairId" />
+
+            <div class="form-group">
+                <label>Customer Name</label>
+                <input type="text" id="editName" maxlength="50" />
+            </div>
+
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" id="editPhone" maxlength="10" />
+            </div>
+
+            <div class="form-group">
+                <label>Mobile Model</label>
+                <input type="text" id="editModel" maxlength="20" />
+            </div>
+
+            <div class="form-group">
+                <label>Problem</label>
+                <textarea id="editProblem"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Status</label>
+                <select id="editStatus">
+                    <option value="Pending">Pending</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Ready">Ready</option>
+                    <option value="Delivered">Delivered</option>
+                </select>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+                <button class="btn-save" onclick="saveEdit()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── CONFIG & SCRIPTS ────────────────────────────────────────── -->
+    <script src="config.js"></script>
+
+    <script>
+        const WA_MESSAGES = {
+            "Pending":     (name) => `Hello ${name},\n\nYour mobile repair is currently pending.\nWe will update you once work has started.\n\nThank you.`,
+            "In Progress": (name) => `Hello ${name},\n\nYour mobile repair is currently under repair.\nWe will notify you once it is ready.\n\nThank you.`,
+            "Ready":       (name) => `Hello ${name},\n\nYour mobile repair is completed and ready for pickup!\nPlease visit the shop at your convenience.\n\nThank you.`,
+            "Delivered":   (name) => `Hello ${name},\n\nYour repaired mobile has been delivered.\nThank you for choosing us!\n\nThank you.`
+        };
+
+        loadRepairs();
+
+        async function loadRepairs() {
+            const tbody = document.getElementById("repairTableBody");
+            const loadMsg = document.getElementById("loadingMsg");
+
+            tbody.innerHTML = "";
+            loadMsg.classList.add("visible");
+
+            try {
+                const response = await fetch(CONFIG.N8N_URL, { method: "GET" });
+                const repairs = await response.json();
+
+                loadMsg.classList.remove("visible");
+
+                if (!repairs || repairs.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: var(--text-muted);">No repairs found</td></tr>';
+                    return;
+                }
+
+                repairs.forEach(repair => {
+                    const row = document.createElement("tr");
+
+                    const statusClass = `status-${repair.status.toLowerCase().replace(" ", "-")}`;
+
+                    row.innerHTML = `
+                        <td><strong>${repair.repairId}</strong></td>
+                        <td>${repair.name}</td>
+                        <td>${repair.phone}</td>
+                        <td>${repair.model || "—"}</td>
+                        <td>${repair.problem}</td>
+                        <td>
+                            <select class="status-select" onchange="updateStatus('${repair.repairId}', this.value)">
+                                <option value="Pending" ${repair.status === "Pending" ? "selected" : ""}>Pending</option>
+                                <option value="In Progress" ${repair.status === "In Progress" ? "selected" : ""}>In Progress</option>
+                                <option value="Ready" ${repair.status === "Ready" ? "selected" : ""}>Ready</option>
+                                <option value="Delivered" ${repair.status === "Delivered" ? "selected" : ""}>Delivered</option>
+                            </select>
+                        </td>
+                        <td>${repair.date}</td>
+                        <td style="text-align: center;">
+                            <div class="action-wrapper" id="action-${repair.repairId}">
+                                <button class="action-btn" onclick="toggleMenu('${repair.repairId}')">⋮</button>
+                                <div class="action-menu">
+                                    <button onclick="openEditModal('${repair.repairId}', '${repair.name}', '${repair.phone}', '${repair.model || ""}', \`${repair.problem}\`, '${repair.status}')">
+                                        ✏️ Edit
+                                    </button>
+                                    <button onclick="openWhatsApp('${repair.phone}', '${repair.name}', '${repair.status}')">
+                                        💬 WhatsApp
+                                    </button>
+                                    <button onclick="callCustomer('${repair.phone}')">
+                                        📞 Call
+                                    </button>
+                                    <button class="delete" onclick="deleteRepair('${repair.repairId}', this)">
+                                        🗑 Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                    `;
+
+                    tbody.appendChild(row);
+                });
+
+            } catch (error) {
+                console.error(error);
+                loadMsg.textContent = "Failed to load repairs";
+            }
+        }
+
+        function toggleMenu(repairId) {
+            const wrapper = document.getElementById(`action-${repairId}`);
+            document.querySelectorAll(".action-wrapper.open").forEach(el => {
+                if (el !== wrapper) el.classList.remove("open");
+            });
+            wrapper.classList.toggle("open");
+        }
+
+        document.addEventListener("click", (e) => {
+            if (!e.target.closest(".action-wrapper")) {
+                document.querySelectorAll(".action-wrapper.open").forEach(el => el.classList.remove("open"));
+            }
+        });
+
+        async function updateStatus(repairId, status) {
+            try {
+                await fetch(CONFIG.N8N_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        action: "updateStatus",
+                        repairId: repairId,
+                        status: status
+                    })
+                });
+            } catch (error) {
+                console.error(error);
+                alert("Status update failed");
+            }
+        }
+
+        function openEditModal(repairId, name, phone, model, problem, status) {
+            document.querySelectorAll(".action-wrapper.open").forEach(el => el.classList.remove("open"));
+
+            document.getElementById("editRepairId").value = repairId;
+            document.getElementById("editName").value = name;
+            document.getElementById("editPhone").value = phone;
+            document.getElementById("editModel").value = model;
+            document.getElementById("editProblem").value = problem;
+            document.getElementById("editStatus").value = status;
+
+            document.getElementById("editModal").classList.add("open");
+        }
+
+        function closeEditModal() {
+            document.getElementById("editModal").classList.remove("open");
+        }
+
+        async function saveEdit() {
+            const repairId = document.getElementById("editRepairId").value;
+            const name = document.getElementById("editName").value.trim();
+            const phone = document.getElementById("editPhone").value.trim();
+            const model = document.getElementById("editModel").value.trim();
+            const problem = document.getElementById("editProblem").value.trim();
+            const status = document.getElementById("editStatus").value;
+
+            if (!name || !phone || !problem) {
+                alert("Please fill all required fields.");
+                return;
+            }
+
+            try {
+                await fetch(CONFIG.N8N_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        action: "updateRepair",
+                        repairId: repairId,
+                        name: name,
+                        phone: phone,
+                        model: model,
+                        problem: problem,
+                        status: status
+                    })
+                });
+
+                closeEditModal();
+                loadRepairs();
+
+            } catch (error) {
+                console.error(error);
+                alert("Edit failed");
+            }
+        }
+
+        function openWhatsApp(phone, name, status) {
+            document.querySelectorAll(".action-wrapper.open").forEach(el => el.classList.remove("open"));
+
+            const getMessage = WA_MESSAGES[status] || WA_MESSAGES["Pending"];
+            const message = getMessage(name);
+            const waUrl = `https://wa.me/91${phone}?text=${encodeURIComponent(message)}`;
+
+            window.open(waUrl, "_blank");
+        }
+
+        function callCustomer(phone) {
+            document.querySelectorAll(".action-wrapper.open").forEach(el => el.classList.remove("open"));
+            window.location.href = `tel:${phone}`;
+        }
+
+        async function deleteRepair(repairId, button) {
+            if (!confirm(`Delete ${repairId}?`)) return;
+
+            document.querySelectorAll(".action-wrapper.open").forEach(el => el.classList.remove("open"));
+
+            try {
+                const response = await fetch(CONFIG.N8N_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        action: "deleteRepair",
+                        repairId: repairId
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result[0] && result[0].success) {
+                    button.closest("tr").remove();
+                } else {
+                    alert("Delete failed");
+                }
+
+            } catch (error) {
+                console.error(error);
+                alert("Delete failed");
+            }
+        }
+    </script>
+
+</body>
+
+</html>

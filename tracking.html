@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Repair Tracker</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ── DESIGN SYSTEM ─────────────────────────────────────────────── */
+        :root {
+            --primary-dark:     #0f172a;
+            --primary-blue:     #1e40af;
+            --accent-orange:    #f97316;
+            --success:          #16a34a;
+            --warning:          #eab308;
+            --danger:           #dc2626;
+
+            --bg-light:         #f8fafc;
+            --bg-white:         #ffffff;
+            --border-color:     #e2e8f0;
+            --text-dark:        #1e293b;
+            --text-muted:       #64748b;
+
+            --status-pending:      #fbbf24;
+            --status-in-progress:  #3b82f6;
+            --status-ready:        #10b981;
+            --status-delivered:    #6b7280;
+
+            --radius:           8px;
+            --shadow:           0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-lg:        0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* ── HEADER ────────────────────────────────────────────────────── */
+        .header {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #1a2746 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .header-content {
+            max-width: 700px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-placeholder {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-orange);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 20px;
+            color: white;
+        }
+
+        .header-text h1 {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .header-text p {
+            font-size: 12px;
+            opacity: 0.9;
+            margin: 2px 0 0 0;
+        }
+
+        /* ── MAIN CONTAINER ────────────────────────────────────────────── */
+        .main-container {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tracker-card {
+            background: var(--bg-white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 28px 24px;
+            width: 100%;
+            max-width: 650px;
+        }
+
+        .card-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .card-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        /* ── SEARCH TABS ───────────────────────────────────────────────── */
+        .search-tabs {
+            display: flex;
+            background: var(--bg-light);
+            border-radius: var(--radius);
+            padding: 4px;
+            margin-bottom: 18px;
+            gap: 4px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            background: transparent;
+            color: var(--text-muted);
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: var(--text-dark);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ── SEARCH BOX ────────────────────────────────────────────────── */
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 12px 14px;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius);
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            color: var(--text-dark);
+            background: #f8fafc;
+            transition: all 0.2s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+
+        .search-box button {
+            padding: 12px 20px;
+            border: none;
+            background: linear-gradient(135deg, var(--accent-orange) 0%, #ea580c 100%);
+            color: white;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .search-box button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(249, 115, 22, 0.3);
+        }
+
+        .search-box button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* ── ERROR MESSAGE ────────────────────────────────────────────── */
+        .error-msg {
+            display: none;
+            color: var(--danger);
+            font-size: 13px;
+            padding: 10px 12px;
+            background: #fef2f2;
+            border-left: 4px solid var(--danger);
+            border-radius: var(--radius);
+            margin-bottom: 14px;
+        }
+
+        .error-msg.visible {
+            display: block;
+        }
+
+        /* ── LOADING STATE ────────────────────────────────────────────── */
+        .loading-msg {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .loading-msg.visible {
+            display: block;
+        }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2.5px solid #e2e8f0;
+            border-top-color: var(--primary-blue);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ── DETAILS SECTION ───────────────────────────────────────────– */
+        .details {
+            display: none;
+        }
+
+        .details.visible {
+            display: block;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .info-item {
+            background: var(--bg-light);
+            padding: 14px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .info-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        /* ── TIMELINE ──────────────────────────────────────────────────── */
+        .timeline-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 20px;
+        }
+
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 18px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: #cbd5e1;
+            z-index: 1;
+        }
+
+        .step {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            width: 25%;
+        }
+
+        .circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #cbd5e1;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .completed .circle {
+            background: var(--status-ready);
+        }
+
+        .current .circle {
+            background: var(--status-in-progress);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+        }
+
+        .step-name {
+            margin-top: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .current .step-name {
+            color: var(--primary-blue);
+            font-weight: 700;
+        }
+
+        .completed .step-name {
+            color: var(--status-ready);
+        }
+
+        /* ── UNKNOWN STATUS WARNING ────────────────────────────────────– */
+        .unknown-status {
+            display: none;
+            padding: 12px;
+            background: #fffbeb;
+            border-left: 4px solid var(--warning);
+            border-radius: var(--radius);
+            color: #92400e;
+            font-size: 13px;
+            margin-top: 12px;
+        }
+
+        .unknown-status.visible {
+            display: block;
+        }
+
+        /* ── RESPONSIVE DESIGN ────────────────────────────────────────– */
+        @media (max-width: 640px) {
+            .header-content {
+                gap: 10px;
+            }
+
+            .header-text h1 {
+                font-size: 18px;
+            }
+
+            .main-container {
+                padding: 16px;
+            }
+
+            .tracker-card {
+                padding: 20px 16px;
+            }
+
+            .card-title {
+                font-size: 20px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .search-box input {
+                padding: 11px 12px;
+                font-size: 16px;
+            }
+
+            .search-box button {
+                padding: 11px 16px;
+                width: 100%;
+            }
+
+            .step-name {
+                font-size: 11px;
+            }
+
+            .circle {
+                width: 32px;
+                height: 32px;
+                font-size: 11px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .main-container {
+                padding: 40px 20px;
+            }
+
+            .tracker-card {
+                padding: 40px 36px;
+            }
+
+            .card-title {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ── HEADER ────────────────────────────────────────────────────── -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo-placeholder">🔧</div>
+            <div class="header-text">
+                <h1>Repair Tracker</h1>
+                <p>Check your status</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── MAIN CONTAINER ────────────────────────────────────────────– -->
+    <div class="main-container">
+        <div class="tracker-card">
+            <h2 class="card-title">Track Your Repair</h2>
+            <p class="card-subtitle">Enter your Repair ID or phone number to check status</p>
+
+            <!-- Search Tabs -->
+            <div class="search-tabs">
+                <button class="tab-btn active" id="tabRepairId" onclick="switchTab('repairId')">
+                    Repair ID
+                </button>
+                <button class="tab-btn" id="tabPhone" onclick="switchTab('phone')">
+                    Phone Number
+                </button>
+            </div>
+
+            <!-- Search Input -->
+            <div class="search-box">
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Enter Repair ID (e.g. MR-1001)"
+                    maxlength="20"
+                />
+                <button id="searchBtn" onclick="trackRepair()">
+                    Check Status
+                </button>
+            </div>
+
+            <!-- Error Message -->
+            <div class="error-msg" id="errorMsg"></div>
+
+            <!-- Loading State -->
+            <div class="loading-msg" id="loadingMsg">
+                <span class="spinner"></span> Checking status...
+            </div>
+
+            <!-- Results -->
+            <div class="details" id="details">
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Repair ID</div>
+                        <div class="info-value" id="repairIdValue"></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Customer Name</div>
+                        <div class="info-value" id="nameValue"></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Phone</div>
+                        <div class="info-value" id="phoneValue"></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Mobile Model</div>
+                        <div class="info-value" id="modelValue"></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Problem</div>
+                        <div class="info-value" id="problemValue"></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Submitted Date</div>
+                        <div class="info-value" id="dateValue"></div>
+                    </div>
+                </div>
+
+                <!-- Timeline -->
+                <div class="timeline-label">Repair Progress</div>
+                <div class="timeline" id="timeline"></div>
+
+                <!-- Unknown Status Warning -->
+                <div class="unknown-status" id="unknownStatus">
+                    ⚠️ Status "<span id="unknownStatusValue"></span>" is not recognized. Please contact the shop.
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ── CONFIG & SCRIPTS ────────────────────────────────────────── -->
+    <script src="config.js"></script>
+
+    <script>
+        const STEPS = ["Pending", "In Progress", "Ready", "Delivered"];
+        let activeTab = "repairId";
+
+        function switchTab(tab) {
+            activeTab = tab;
+
+            document.getElementById("tabRepairId").classList.toggle("active", tab === "repairId");
+            document.getElementById("tabPhone").classList.toggle("active", tab === "phone");
+
+            const input = document.getElementById("searchInput");
+            if (tab === "repairId") {
+                input.placeholder = "Enter Repair ID (e.g. MR-1001)";
+                input.maxLength = 20;
+                input.type = "text";
+            } else {
+                input.placeholder = "Enter 10-digit phone number";
+                input.maxLength = 10;
+                input.type = "tel";
+            }
+
+            input.value = "";
+            hideError();
+            hideDetails();
+        }
+
+        function showError(msg) {
+            const el = document.getElementById("errorMsg");
+            el.textContent = msg;
+            el.classList.add("visible");
+        }
+
+        function hideError() {
+            document.getElementById("errorMsg").classList.remove("visible");
+        }
+
+        function hideDetails() {
+            document.getElementById("details").classList.remove("visible");
+        }
+
+        function setLoading(isLoading) {
+            const btn = document.getElementById("searchBtn");
+            const loadMsg = document.getElementById("loadingMsg");
+
+            if (isLoading) {
+                btn.disabled = true;
+                btn.textContent = "Checking...";
+                loadMsg.classList.add("visible");
+            } else {
+                btn.disabled = false;
+                btn.textContent = "Check Status";
+                loadMsg.classList.remove("visible");
+            }
+        }
+
+        async function trackRepair() {
+            const input = document.getElementById("searchInput").value.trim();
+
+            if (!input) {
+                showError(activeTab === "repairId"
+                    ? "Please enter a Repair ID."
+                    : "Please enter a phone number.");
+                return;
+            }
+
+            if (activeTab === "phone" && !/^\d{10}$/.test(input)) {
+                showError("Please enter a valid 10-digit phone number.");
+                return;
+            }
+
+            hideError();
+            hideDetails();
+            setLoading(true);
+
+            try {
+                const payload = {
+                    action: "trackRepair",
+                    ...(activeTab === "repairId"
+                        ? { repairId: input }
+                        : { phone: input })
+                };
+
+                const response = await fetch(CONFIG.N8N_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                const data = result[0];
+
+                if (!data || data.success === false) {
+                    showError(activeTab === "repairId"
+                        ? "Repair ID not found."
+                        : "No repair found for this phone number.");
+                    return;
+                }
+
+                document.getElementById("repairIdValue").textContent = data.repairId || "—";
+                document.getElementById("nameValue").textContent = data.name || "—";
+                document.getElementById("phoneValue").textContent = data.phone || "—";
+                document.getElementById("modelValue").textContent = data.model || "—";
+                document.getElementById("problemValue").textContent = data.problem || "—";
+                document.getElementById("dateValue").textContent = data.date || "—";
+
+                document.getElementById("details").classList.add("visible");
+                renderTimeline(data.status);
+
+            } catch (error) {
+                console.error(error);
+                showError("Something went wrong. Please try again.");
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function renderTimeline(currentStatus) {
+            const timeline = document.getElementById("timeline");
+            const unknownBox = document.getElementById("unknownStatus");
+            const unknownVal = document.getElementById("unknownStatusValue");
+
+            timeline.innerHTML = "";
+
+            const currentIndex = STEPS.indexOf(currentStatus);
+
+            if (currentIndex === -1) {
+                unknownVal.textContent = currentStatus;
+                unknownBox.classList.add("visible");
+                return;
+            }
+
+            unknownBox.classList.remove("visible");
+
+            STEPS.forEach((step, index) => {
+                const div = document.createElement("div");
+
+                if (index < currentIndex) {
+                    div.className = "step completed";
+                } else if (index === currentIndex) {
+                    div.className = "step current";
+                } else {
+                    div.className = "step";
+                }
+
+                div.innerHTML = `
+                    <div class="circle">
+                        ${index < currentIndex ? "✓" : index + 1}
+                    </div>
+                    <div class="step-name">${step}</div>
+                `;
+
+                timeline.appendChild(div);
+            });
+        }
+
+        document.getElementById("searchInput").addEventListener("keydown", (e) => {
+            if (e.key === "Enter") trackRepair();
+        });
+    </script>
+
+</body>
+
+</html>
